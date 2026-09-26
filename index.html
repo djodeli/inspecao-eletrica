@@ -556,13 +556,53 @@
                 checks: []
             };
 
+            const checkLabels = [];
             document.querySelectorAll('.expandable').forEach((checkbox, index) => {
                 const textarea = checkbox.closest('.checkbox-item').querySelector('textarea');
+                const label = checkbox.closest('.checkbox-item').querySelector('span').textContent;
                 formData.checks.push({
                     checked: checkbox.checked,
                     response: textarea ? textarea.value : ''
                 });
+                checkLabels.push(label);
             });
+
+            // Gerar conteúdo do arquivo TXT
+            let txtContent = '═══════════════════════════════════════════════════════════\n';
+            txtContent += '         CHECKLIST DE DIAGNÓSTICO DE MÁQUINAS\n';
+            txtContent += '═══════════════════════════════════════════════════════════\n\n';
+            txtContent += `Data: ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}\n\n`;
+            
+            txtContent += '───────────────────────────────────────────────────────────\n';
+            txtContent += 'INFORMAÇÕES DO CLIENTE\n';
+            txtContent += '───────────────────────────────────────────────────────────\n';
+            txtContent += `Nome do Cliente: ${formData.clientName || '(não preenchido)'}\n`;
+            txtContent += `Empresa: ${formData.companyName || '(não preenchido)'}\n`;
+            txtContent += `Telefone: ${formData.phone || '(não preenchido)'}\n`;
+            txtContent += `Cargo: ${formData.position || '(não preenchido)'}\n`;
+            txtContent += `Ramo: ${formData.industry || '(não preenchido)'}\n\n`;
+
+            txtContent += '───────────────────────────────────────────────────────────\n';
+            txtContent += 'ITENS VERIFICADOS\n';
+            txtContent += '───────────────────────────────────────────────────────────\n\n';
+
+            formData.checks.forEach((check, index) => {
+                const status = check.checked ? '✓ VERIFICADO' : '○ NÃO VERIFICADO';
+                txtContent += `${index + 1}. [${status}] ${checkLabels[index]}\n`;
+                if (check.response.trim()) {
+                    txtContent += `   Observação: ${check.response}\n`;
+                }
+                txtContent += '\n';
+            });
+
+            // Baixar arquivo
+            const element = document.createElement('a');
+            const file = new Blob([txtContent], {type: 'text/plain'});
+            element.href = URL.createObjectURL(file);
+            element.download = `checklist_${new Date().getTime()}.txt`;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
 
             localStorage.setItem('checklistData', JSON.stringify(formData));
             
