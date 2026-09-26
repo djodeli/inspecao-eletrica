@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist de Diagnóstico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkbox-label span {
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .response-field {
+            display: none;
+            margin-top: 12px;
+            margin-left: 32px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .response-field.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .response-field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 40px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 32px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #5568d3;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-clear:hover {
+            background: #e8e8e8;
+        }
+
+        .success-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Checklist de Diagnóstico de Máquinas</h1>
+        <form id="checklistForm">
+            <!-- Dados do Cliente -->
+            <div class="form-section">
+                <div class="section-title">Informações do Cliente</div>
+                
+                <div class="form-group">
+                    <label>Nome do Cliente</label>
+                    <input type="text" id="clientName" placeholder="Digite o nome do cliente">
+                </div>
+
+                <div class="form-group">
+                    <label>Nome da Empresa</label>
+                    <input type="text" id="companyName" placeholder="Digite o nome da empresa">
+                </div>
+
+                <div class="form-group">
+                    <label>Telefone de Contato</label>
+                    <input type="tel" id="phone" placeholder="(XX) XXXXX-XXXX">
+                </div>
+
+                <div class="form-group">
+                    <label>Cargo</label>
+                    <input type="text" id="position" placeholder="Digite o cargo">
+                </div>
+
+                <div class="form-group">
+                    <label>Ramo de Atuação</label>
+                    <select id="industry">
+                        <option value="">Selecione uma opção</option>
+                        <option value="manufactura">Manufatura</option>
+                        <option value="alimentacao">Alimentação</option>
+                        <option value="quimica">Química</option>
+                        <option value="textil">Têxtil</option>
+                        <option value="papel">Papel e Celulose</option>
+                        <option value="energia">Energia</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Fase 1 -->
+            <div class="form-section">
+                <div class="section-title">Fase 1: Histórico e Triagem</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check1">
+                    <div class="checkbox-label">
+                        <span>Entrevista com o operador</span>
+                        <div class="response-field">
+                            <textarea placeholder="Descreva qual era a etapa exata do processo ou movimento quando a máquina parou..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check2">
+                    <div class="checkbox-label">
+                        <span>Verificação de estado atual</span>
+                        <div class="response-field">
+                            <textarea placeholder="Descreva o estado atual: não liga, liga mas não movimenta, trava em ponto específico, etc..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check3">
+                    <div class="checkbox-label">
+                        <span>Registro fotográfico de dados</span>
+                        <div class="response-field">
+                            <textarea placeholder="Anote: tensão, potência, modelo e ano da máquina..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check4">
+                    <div class="checkbox-label">
+                        <span>Mapeamento de alarmes</span>
+                        <div class="response-field">
+                            <textarea placeholder="Descreva mensagens de erro, códigos ou luzes sinalizadoras..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check5">
+                    <div class="checkbox-label">
+                        <span>Disponibilidade de esquemas</span>
+                        <div class="response-field">
+                            <textarea placeholder="Diagrama elétrico disponível? Físico ou digital?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 2 -->
+            <div class="form-section">
+                <div class="section-title">Fase 2: Inspeção Visual e Mecânica</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check6">
+                    <div class="checkbox-label">
+                        <span>Bloqueio de segurança (LOTO)</span>
+                        <div class="response-field">
+                            <textarea placeholder="Chave geral travada? Status da segurança..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check7">
+                    <div class="checkbox-label">
+                        <span>Varredura olfativa e visual</span>
+                        <div class="response-field">
+                            <textarea placeholder="Cheiro de queimado? Fuligem? Bornes derretidos?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check8">
+                    <div class="checkbox-label">
+                        <span>Teste de tração física</span>
+                        <div class="response-field">
+                            <textarea placeholder="Fios soltos encontrados? Onde? Quais cabos?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check9">
+                    <div class="checkbox-label">
+                        <span>Análise de contaminação</span>
+                        <div class="response-field">
+                            <textarea placeholder="Poeira metálica, umidade, óleo ou resíduos encontrados?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check10">
+                    <div class="checkbox-label">
+                        <span>Sensores de campo</span>
+                        <div class="response-field">
+                            <textarea placeholder="Chaves, sensores ou cabos danificados?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 3 -->
+            <div class="form-section">
+                <div class="section-title">Fase 3: Cadeia de Segurança</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check11">
+                    <div class="checkbox-label">
+                        <span>Botões de emergência</span>
+                        <div class="response-field">
+                            <textarea placeholder="Botões funcionando? Algum travado?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check12">
+                    <div class="checkbox-label">
+                        <span>Proteções móveis</span>
+                        <div class="response-field">
+                            <textarea placeholder="Portas e grades fechadas? Chaves magnéticas atuando?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check13">
+                    <div class="checkbox-label">
+                        <span>Módulo de segurança</span>
+                        <div class="response-field">
+                            <textarea placeholder="LEDs de alimentação e monitoramento ligados?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check14">
+                    <div class="checkbox-label">
+                        <span>Rearme do sistema</span>
+                        <div class="response-field">
+                            <textarea placeholder="Botão de Reset funcionando? Contator atraca?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 4 -->
+            <div class="form-section">
+                <div class="section-title">Fase 4: Distribuição de Potência e Comando</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check15">
+                    <div class="checkbox-label">
+                        <span>Alimentação da rede (AC)</span>
+                        <div class="response-field">
+                            <textarea placeholder="Tensão trifásica medida? Fases equilibradas?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check16">
+                    <div class="checkbox-label">
+                        <span>Proteções de sobrecarga</span>
+                        <div class="response-field">
+                            <textarea placeholder="Disjuntores desarmados? Relés térmicos status?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check17">
+                    <div class="checkbox-label">
+                        <span>Fonte de comando (DC)</span>
+                        <div class="response-field">
+                            <textarea placeholder="Tensão estável 23,8-24,5 Vcc? Quedas detectadas?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check18">
+                    <div class="checkbox-label">
+                        <span>Transformadores auxiliares</span>
+                        <div class="response-field">
+                            <textarea placeholder="Saídas de 110V ou 220V estabilizadas?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 5 -->
+            <div class="form-section">
+                <div class="section-title">Fase 5: Diagnóstico Lógico</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check19">
+                    <div class="checkbox-label">
+                        <span>Status de falha do CLP</span>
+                        <div class="response-field">
+                            <textarea placeholder="LED RUN verde? Falhas detectadas (SF, ERROR)?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check20">
+                    <div class="checkbox-label">
+                        <span>Rastreamento de entradas</span>
+                        <div class="response-field">
+                            <textarea placeholder="Sensor no campo acende LED? E no CLP também?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check21">
+                    <div class="checkbox-label">
+                        <span>Rastreamento de saídas</span>
+                        <div class="response-field">
+                            <textarea placeholder="CLP comanda mas mecanismo não se move?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check22">
+                    <div class="checkbox-label">
+                        <span>Isolamento de acionamento</span>
+                        <div class="response-field">
+                            <textarea placeholder="Relé de interface OK? Bobina contator OK? Cabos OK?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 6 -->
+            <div class="form-section">
+                <div class="section-title">Fase 6: Acionamentos de Potência</div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check23">
+                    <div class="checkbox-label">
+                        <span>Status dos displays</span>
+                        <div class="response-field">
+                            <textarea placeholder="Inversores, soft starters ou servodrives ligados e sem falhas?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check24">
+                    <div class="checkbox-label">
+                        <span>Códigos de erro</span>
+                        <div class="response-field">
+                            <textarea placeholder="Qual código de falha? Consulte manual do fabricante..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-item">
+                    <input type="checkbox" class="expandable" id="check25">
+                    <div class="checkbox-label">
+                        <span>Teste do motor a frio</span>
+                        <div class="response-field">
+                            <textarea placeholder="Resistência ôhmica das bobinas OK? Curto-circuito detectado?..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="button-group">
+                <button type="button" class="btn-save" onclick="saveForm()">💾 Salvar Dados</button>
+                <button type="button" class="btn-clear" onclick="clearForm()">🔄 Limpar Formulário</button>
+            </div>
+
+            <div class="success-message" id="successMsg">✓ Dados salvos com sucesso!</div>
+        </form>
+    </div>
+
+    <script>
+        // Expandir/colapsar campos ao clicar no checkbox
+        document.querySelectorAll('.expandable').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const responseField = this.closest('.checkbox-item').querySelector('.response-field');
+                responseField.classList.toggle('active', this.checked);
+            });
+        });
+
+        // Salvar dados
+        function saveForm() {
+            const formData = {
+                clientName: document.getElementById('clientName').value,
+                companyName: document.getElementById('companyName').value,
+                phone: document.getElementById('phone').value,
+                position: document.getElementById('position').value,
+                industry: document.getElementById('industry').value,
+                checks: []
+            };
+
+            document.querySelectorAll('.expandable').forEach((checkbox, index) => {
+                const textarea = checkbox.closest('.checkbox-item').querySelector('textarea');
+                formData.checks.push({
+                    checked: checkbox.checked,
+                    response: textarea ? textarea.value : ''
+                });
+            });
+
+            localStorage.setItem('checklistData', JSON.stringify(formData));
+            
+            const msg = document.getElementById('successMsg');
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 3000);
+        }
+
+        // Limpar formulário
+        function clearForm() {
+            if (confirm('Deseja realmente limpar todos os dados?')) {
+                document.getElementById('checklistForm').reset();
+                document.querySelectorAll('.response-field').forEach(field => {
+                    field.classList.remove('active');
+                });
+                document.querySelectorAll('.expandable').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                localStorage.removeItem('checklistData');
+            }
+        }
+
+        // Carregar dados ao abrir
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('checklistData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('clientName').value = data.clientName || '';
+                document.getElementById('companyName').value = data.companyName || '';
+                document.getElementById('phone').value = data.phone || '';
+                document.getElementById('position').value = data.position || '';
+                document.getElementById('industry').value = data.industry || '';
+
+                data.checks.forEach((check, index) => {
+                    const checkbox = document.getElementById(`check${index + 1}`);
+                    if (checkbox) {
+                        checkbox.checked = check.checked;
+                        const field = checkbox.closest('.checkbox-item').querySelector('.response-field');
+                        if (check.checked) field.classList.add('active');
+                        const textarea = field.querySelector('textarea');
+                        if (textarea) textarea.value = check.response || '';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
